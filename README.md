@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Our Food</title>
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <style>
     *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#f6f6f6;color:#111}
     .container{max-width:980px;margin:auto;padding:16px}
@@ -11,7 +12,6 @@
     .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0 16px}
     .tab{padding:10px 14px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;color:#111;cursor:pointer}
     .tab.active{background:#111;color:#fff}
-    .search{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:12px;margin:8px 0 16px}
     .grid{display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
     .card{background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.08);overflow:hidden;display:flex;flex-direction:column}
@@ -31,8 +31,6 @@
 
     <div class="tabs" id="tabs"></div>
     <div class="banner" id="banner">MEALS</div>
-
-    <input class="search" id="search" placeholder="Search menu... (e.g., pork, noodles)" />
 
     <div class="grid" id="grid"></div>
   </div>
@@ -96,7 +94,6 @@
     const tabsEl = document.getElementById('tabs');
     const gridEl = document.getElementById('grid');
     const bannerEl = document.getElementById('banner');
-    const searchEl = document.getElementById('search');
 
     function renderTabs(){
       tabsEl.innerHTML = '';
@@ -117,14 +114,13 @@
     }
 
     function renderGrid(){
-      const q = (searchEl.value||'').toLowerCase();
-      const filtered = DATA.items.filter(i => i.category===activeCat && (i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q)));
+      const filtered = DATA.items.filter(i => i.category===activeCat);
       gridEl.innerHTML = '';
       filtered.forEach(i => {
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-          <img class="img" src="${i.img}" alt="${i.name}"/>
+          <img class="img" src="${i.img}" alt="${i.name}" loading="eager" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://placehold.co/1200x800?text=Photo'" />
           <div class="pad">
             <div class="name">${i.name}</div>
             <p class="desc">${i.desc}</p>
@@ -136,7 +132,7 @@
 
     function render(){ renderTabs(); renderGrid(); }
 
-    searchEl.addEventListener('input', renderGrid);
+    // Initial render
     render();
   </script>
 </body>
