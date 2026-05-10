@@ -1,140 +1,978 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Our Food</title>
-  <link rel="preload" as="image" href="images/sundae-soolguk.jpg">
-  <style>
-    *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#f6f6f6;color:#111}
-    .container{max-width:980px;margin:auto;padding:16px}
-    .title{font-size:28px;font-weight:700;text-align:center;margin:8px 0 16px}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0 16px}
-    .tab{padding:10px 14px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;color:#111;cursor:pointer;transition:all .15s}
-    .tab.active{background:#111;color:#fff}
-    .grid{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
-    .card{background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.08);overflow:hidden;display:flex;flex-direction:column}
-    .img{width:100%;height:210px;object-fit:cover}
-    .pad{padding:14px}
-    .name{font-size:18px;font-weight:700;margin:2px 0 6px}
-    .desc{font-size:14px;color:#6b7280;margin:0 0 10px}
-    .price{font-weight:800;text-align:right}
-    .banner{background:linear-gradient(90deg,#e68162,#be4a31);color:#fff;border-radius:18px;margin:10px 0 18px;padding:18px 20px;font-size:22px;font-weight:800;letter-spacing:.6px}
-    .options{font-size:14px;color:#374151;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
-    .pill{background:#f3f4f6;border-radius:999px;padding:4px 10px;border:1px solid #e5e7eb}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TimeLedger — 시간 가계부</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #f5efe2;
+    --paper-2: #ede4d0;
+    --ink: #2a2419;
+    --ink-soft: #5b4f3d;
+    --ink-fade: #9a8c73;
+    --accent: #c2410c;
+    --accent-2: #b45309;
+    --line: #d6c9ad;
+    --shadow: 0 1px 0 rgba(42,36,25,0.04), 0 8px 24px -12px rgba(42,36,25,0.18);
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html, body { height: 100%; }
+
+  body{
+    font-family: 'Noto Serif KR', 'Fraunces', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 종이 질감 — noise */
+  body::before{
+    content:"";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(180,140,80,0.05), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(120,80,40,0.04), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after{
+    content:"";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.5 0 0 0 0 0.3 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout{
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    height: 100vh;
+    gap: 0;
+  }
+
+  /* === LEFT: MAIN === */
+  .main{
+    padding: 48px 64px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--line);
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 64px;
+  }
+
+  .brand{
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .brand-mark{
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .brand-mark::first-letter{ color: var(--accent); }
+  .brand-tag{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-fade);
+    border-left: 1px solid var(--line);
+    padding-left: 12px;
+  }
+
+  .clock{
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .clock-time{
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .clock-date{
+    font-size: 11px;
+    margin-top: 6px;
+    color: var(--ink-fade);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  /* === IDLE STATE === */
+  .stage{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 720px;
+  }
+
+  .eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow::after{
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+    max-width: 80px;
+  }
+
+  .question{
+    font-family: 'Fraunces', 'Noto Serif KR', serif;
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .question em{
+    font-style: italic;
+    color: var(--accent);
+  }
+  .question-sub{
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 48px;
+    line-height: 1.5;
+  }
+
+  .input-row{
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+    margin-bottom: 48px;
+    transition: border-color 0.3s;
+  }
+  .input-row:focus-within{
+    border-color: var(--accent);
+  }
+  .input-row input{
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    color: var(--ink);
+    outline: none;
+    padding: 4px 0;
+  }
+  .input-row input::placeholder{
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+
+  .start-btn{
+    align-self: flex-start;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 18px 32px 18px 36px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow);
+  }
+  .start-btn:hover{
+    background: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -8px rgba(194,65,12,0.35);
+  }
+  .start-btn:disabled{
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .start-btn .arrow{
+    width: 14px; height: 14px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    margin-left: 4px;
+  }
+
+  /* === RUNNING STATE === */
+  .running{
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+  }
+  .running.active{ display: flex; }
+  .stage.idle.hidden{ display: none; }
+
+  .running-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pulse{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%, 100%{ opacity:1; transform: scale(1); }
+    50%{ opacity:0.4; transform: scale(0.7); }
+  }
+
+  .task-name-display{
+    font-family: 'Fraunces', 'Noto Serif KR', serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 56px;
+    max-width: 720px;
+  }
+
+  .timer-grid{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 48px;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .time-block{ font-family: 'IBM Plex Mono', monospace; }
+  .time-block .label{
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-fade);
+    margin-bottom: 8px;
+  }
+  .time-block .value{
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .time-block.right{ text-align: right; }
+
+  .elapsed{
+    text-align: center;
+  }
+  .elapsed .value{
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .elapsed .label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-fade);
+    margin-top: 8px;
+  }
+
+  .stop-btn{
+    align-self: flex-start;
+    background: var(--paper);
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 18px 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+  }
+  .stop-btn:hover{
+    background: var(--accent);
+    color: var(--paper);
+    transform: translateY(-2px);
+  }
+
+  /* === MEMO STATE === */
+  .memo{
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    max-width: 720px;
+  }
+  .memo.active{ display: flex; }
+
+  .memo-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+
+  .memo-summary{
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .memo-summary em{
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .memo-meta{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-fade);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 36px;
+  }
+
+  .memo-textarea{
+    width: 100%;
+    min-height: 160px;
+    border: none;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    background: transparent;
+    padding: 24px 0;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink);
+    outline: none;
+    resize: vertical;
+  }
+  .memo-textarea::placeholder{
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+
+  .memo-actions{
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .save-btn{
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 18px 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+  }
+  .save-btn:hover{
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+  .skip-btn{
+    background: transparent;
+    color: var(--ink-soft);
+    border: none;
+    padding: 18px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .skip-btn:hover{ color: var(--ink); }
+
+  /* === RIGHT: LEDGER === */
+  .ledger{
+    background: var(--paper-2);
+    padding: 40px 32px;
+    overflow-y: auto;
+    position: relative;
+  }
+  .ledger::before{
+    content:"";
+    position: absolute;
+    left: 0; top:0; bottom:0;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .ledger-header{
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ledger-title{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .ledger-subtitle{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-fade);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ledger-stats{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .stat .stat-num{
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-fade);
+    margin-top: 6px;
+  }
+
+  .empty-state{
+    padding: 32px 0;
+    text-align: center;
+    color: var(--ink-fade);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .ledger-list{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .entry{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 18px 20px;
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    position: relative;
+    animation: enter 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  @keyframes enter{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .entry-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .entry-name{
+    font-family: 'Fraunces', 'Noto Serif KR', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.35;
+    flex: 1;
+  }
+  .entry-duration{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .entry-when{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .entry-memo{
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .entry-memo.empty{
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+  .entry-delete{
+    position: absolute;
+    top: 8px; right: 8px;
+    background: transparent;
+    border: none;
+    color: var(--ink-fade);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 4px;
+  }
+  .entry:hover .entry-delete{ opacity: 1; }
+  .entry-delete:hover{ background: rgba(194,65,12,0.1); color: var(--accent); }
+
+  /* Reset */
+  .reset-btn{
+    background: transparent;
+    border: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-fade);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .reset-btn:hover{ color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 1024px){
+    .layout{ grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+    .main{ border-right: none; border-bottom: 1px solid var(--line); padding: 32px; }
+    .question{ font-size: 38px; }
+    .ledger{ padding: 32px; max-height: 60vh; }
+    body{ overflow-y: auto; }
+  }
+  @media (max-width: 540px){
+    .main{ padding: 24px; }
+    .header{ flex-direction: column; gap: 16px; margin-bottom: 40px; }
+    .clock{ text-align: left; }
+    .clock-time{ font-size: 24px; }
+    .question{ font-size: 30px; }
+    .task-name-display{ font-size: 28px; }
+    .elapsed .value{ font-size: 44px; }
+    .timer-grid{ grid-template-columns: 1fr; gap: 20px; }
+    .time-block.right{ text-align: left; }
+    .ledger{ padding: 24px; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="title">Our Food</div>
+  <div class="layout">
 
-    <div class="tabs" id="tabs"></div>
-    <div class="banner" id="banner">MEALS</div>
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+      <div class="header">
+        <div class="brand">
+          <span class="brand-mark"><em>T</em>imeLedger</span>
+          <span class="brand-tag">시간을 기록하다</span>
+        </div>
+        <div class="clock">
+          <div class="clock-time" id="clockTime">--:--:--</div>
+          <div class="clock-date" id="clockDate">—</div>
+        </div>
+      </div>
 
-    <div class="grid" id="grid"></div>
+      <!-- IDLE -->
+      <section class="stage idle" id="stageIdle">
+        <div class="eyebrow">새로운 작업 시작하기</div>
+        <h1 class="question">지금 <em>무엇</em>에<br/>시간을 쓰고 계신가요?</h1>
+        <p class="question-sub">작업의 이름을 적고 시작하세요. 끝나면 얼마나 걸렸는지, 무엇을 느꼈는지 기록할 수 있어요.</p>
+
+        <div class="input-row">
+          <input type="text" id="taskInput" placeholder="예: 분기 리포트 초안 작성" autocomplete="off" />
+        </div>
+
+        <button class="start-btn" id="startBtn" disabled>
+          시작하기
+          <span class="arrow"></span>
+        </button>
+      </section>
+
+      <!-- RUNNING -->
+      <section class="running" id="stageRunning">
+        <div class="running-eyebrow">
+          <span class="pulse"></span>
+          진행 중
+        </div>
+        <h2 class="task-name-display" id="runningTaskName">—</h2>
+
+        <div class="timer-grid">
+          <div class="time-block">
+            <div class="label">Started</div>
+            <div class="value" id="startedAt">--:--</div>
+          </div>
+          <div class="elapsed">
+            <div class="value" id="elapsedTime">00:00</div>
+            <div class="label">Elapsed</div>
+          </div>
+          <div class="time-block right">
+            <div class="label">Now</div>
+            <div class="value" id="nowTime">--:--</div>
+          </div>
+        </div>
+
+        <button class="stop-btn" id="stopBtn">종료하기</button>
+      </section>
+
+      <!-- MEMO -->
+      <section class="memo" id="stageMemo">
+        <div class="memo-eyebrow">작업 완료</div>
+        <h2 class="memo-summary"><em id="memoTaskName">—</em>에 <em id="memoDuration">—</em> 썼어요.</h2>
+        <p class="memo-meta" id="memoMeta">—</p>
+
+        <textarea class="memo-textarea" id="memoText" placeholder="잘 된 점, 아쉬운 점, 다음에 시도할 것을 짧게 남겨두세요."></textarea>
+
+        <div class="memo-actions">
+          <button class="save-btn" id="saveBtn">저장하고 돌아가기</button>
+          <button class="skip-btn" id="skipBtn">메모 없이 저장</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== LEDGER ===== -->
+    <aside class="ledger">
+      <div class="ledger-header">
+        <div class="ledger-title">Today's Ledger</div>
+        <div class="ledger-subtitle">
+          <span id="ledgerDate">—</span>
+          <button class="reset-btn" id="resetBtn" title="오늘 기록 초기화">초기화</button>
+        </div>
+      </div>
+
+      <div class="ledger-stats">
+        <div class="stat">
+          <div class="stat-num" id="statCount">0</div>
+          <div class="stat-label">완료한 작업</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="statTotal">0m</div>
+          <div class="stat-label">총 집중시간</div>
+        </div>
+      </div>
+
+      <div id="ledgerEmpty" class="empty-state">
+        아직 기록된 작업이 없어요.<br/>첫 작업을 시작해보세요.
+      </div>
+
+      <ul class="ledger-list" id="ledgerList"></ul>
+    </aside>
+
   </div>
 
-  <script>
-    // ====== CONFIG: USD display ======
-    const USD_FMT = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-    // 1 USD = RATE KRW (override with ?rate=1350)
-    const RATE = Number(new URLSearchParams(location.search).get('rate')) || 1300;
-    const krwToUSD = (krw) => USD_FMT.format((krw||0) / RATE);
+<script>
+  /* ===== State ===== */
+  const STORAGE_KEY = 'timeledger.entries.v1';
+  let entries = loadEntries();
+  let current = null;       // { name, startTs }
+  let tickInterval = null;
+  let clockInterval = null;
 
-    // ====== DATA ======
-    const DATA = {
-      categories: [
-        { id: 'meals', label: 'Meals' },
-        { id: 'specials', label: 'Specials' },
-        { id: 'drinks', label: 'Drinks & Alcohol' },
-      ],
-      items: [
-        // MEALS — Sundae soups
-        { id:'sundae-guk', category:'meals', img:'images/sundae-guk.jpg',
-          name:'Sundae Soup (Blood Sausage Soup)', desc:'Rich pork-bone broth with Korean blood sausage & chives', priceKRW:8000 },
-        { id:'sundae-soolguk', category:'meals', img:'images/sundae-soolguk.jpg',
-          name:'Sundae Soolguk (Hangover Soup)', desc:'Deeper, spicier hangover-style soup with sundae & pork', priceKRW:15000 },
-        { id:'special-sundae-guk', category:'meals', img:'images/sundae-guk.jpg',
-          name:'Special Sundae Soup', desc:'Extra meats & toppings', priceKRW:9000 },
+  /* ===== DOM refs ===== */
+  const $ = (id) => document.getElementById(id);
+  const stageIdle = $('stageIdle');
+  const stageRunning = $('stageRunning');
+  const stageMemo = $('stageMemo');
+  const taskInput = $('taskInput');
+  const startBtn = $('startBtn');
+  const stopBtn = $('stopBtn');
+  const saveBtn = $('saveBtn');
+  const skipBtn = $('skipBtn');
+  const resetBtn = $('resetBtn');
+  const memoText = $('memoText');
 
-        // SPECIALS — Platters
-        { id:'king-sundae', category:'specials', img:'images/assorted-sundae.jpg',
-          name:'King Sundae (Whole Blood Sausage)', desc:'Large, shareable Korean blood sausage', priceKRW:18000 },
-        { id:'headmeat-suyuk', category:'specials', img:'images/headmeat-suyuk.jpg',
-          name:'Boiled Pork Head Slices', desc:'Tender head meat (suyuk) platter', priceKRW:18000 },
-        { id:'assorted-sundae', category:'specials', img:'images/assorted-sundae.jpg',
-          name:'Assorted Sundae Platter', desc:'Mixed Korean blood sausage selection', priceKRW:18000 },
-        { id:'sundae-set', category:'specials', img:'images/sundae-set.jpg',
-          name:'Sundae Set Meal', desc:'Sundae with soup & rice', priceKRW:16000 },
+  /* ===== Storage ===== */
+  function loadEntries(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      return JSON.parse(raw);
+    } catch(e){ return []; }
+  }
+  function saveEntries(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+    catch(e){ console.warn('save failed', e); }
+  }
 
-        // DRINKS — real product shots
-        { id:'soju', category:'drinks', img:'images/soju.jpg',
-          name:'Soju', desc:'Korean distilled spirit', priceKRW:4000 },
-        { id:'beer', category:'drinks', img:'images/beer.jpg',
-          name:'Beer', desc:'Cass / Terra / Kloud', priceKRW:4000 },
-        { id:'baekseju', category:'drinks', img:'images/baekseju.jpg',
-          name:'Baekseju', desc:'Herbal rice wine', priceKRW:7000 },
-        { id:'sansachun', category:'drinks', img:'images/sansachun.jpg',
-          name:'Sansachun', desc:'Hawthorn wine', priceKRW:7000 },
-        { id:'cheongha', category:'drinks', img:'images/cheongha.jpg',
-          name:'Cheongha', desc:'Refined rice wine', priceKRW:5000 },
-        { id:'makgeolli', category:'drinks', img:'images/makgeolli.jpg',
-          name:'Makgeolli', desc:'Korean rice wine', priceKRW:4000 }
-      ]
+  /* ===== Helpers ===== */
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function fmtTime(ts){
+    const d = new Date(ts);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  function fmtTimeFull(ts){
+    const d = new Date(ts);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  function fmtDateKr(ts){
+    const d = new Date(ts);
+    const days = ['일','월','화','수','목','금','토'];
+    return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} (${days[d.getDay()]})`;
+  }
+  function fmtDuration(ms){
+    const sec = Math.floor(ms/1000);
+    const h = Math.floor(sec/3600);
+    const m = Math.floor((sec%3600)/60);
+    const s = sec%60;
+    if(h>0) return `${h}시간 ${m}분 ${s}초`;
+    if(m>0) return `${m}분 ${s}초`;
+    return `${s}초`;
+  }
+  function fmtElapsedShort(ms){
+    const sec = Math.floor(ms/1000);
+    const h = Math.floor(sec/3600);
+    const m = Math.floor((sec%3600)/60);
+    const s = sec%60;
+    if(h>0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    return `${pad(m)}:${pad(s)}`;
+  }
+  function fmtTotalShort(ms){
+    const sec = Math.floor(ms/1000);
+    const h = Math.floor(sec/3600);
+    const m = Math.floor((sec%3600)/60);
+    if(h>0) return `${h}h ${m}m`;
+    return `${m}m`;
+  }
+  function isToday(ts){
+    const d = new Date(ts);
+    const now = new Date();
+    return d.getFullYear()===now.getFullYear() &&
+           d.getMonth()===now.getMonth() &&
+           d.getDate()===now.getDate();
+  }
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  /* ===== Clock ===== */
+  function updateClock(){
+    const now = Date.now();
+    $('clockTime').textContent = fmtTimeFull(now);
+    $('clockDate').textContent = fmtDateKr(now);
+    $('ledgerDate').textContent = fmtDateKr(now);
+    if(current){
+      $('nowTime').textContent = fmtTimeFull(now);
+    }
+  }
+  clockInterval = setInterval(updateClock, 1000);
+  updateClock();
+
+  /* ===== Stage transitions ===== */
+  function showIdle(){
+    stageIdle.classList.remove('hidden');
+    stageRunning.classList.remove('active');
+    stageMemo.classList.remove('active');
+    taskInput.value = '';
+    startBtn.disabled = true;
+    setTimeout(() => taskInput.focus(), 100);
+  }
+  function showRunning(){
+    stageIdle.classList.add('hidden');
+    stageRunning.classList.add('active');
+    stageMemo.classList.remove('active');
+  }
+  function showMemo(){
+    stageIdle.classList.add('hidden');
+    stageRunning.classList.remove('active');
+    stageMemo.classList.add('active');
+    setTimeout(() => memoText.focus(), 100);
+  }
+
+  /* ===== Start ===== */
+  taskInput.addEventListener('input', () => {
+    startBtn.disabled = taskInput.value.trim().length === 0;
+  });
+  taskInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !startBtn.disabled){ startTask(); }
+  });
+  startBtn.addEventListener('click', startTask);
+
+  function startTask(){
+    const name = taskInput.value.trim();
+    if(!name) return;
+    current = { name, startTs: Date.now() };
+    $('runningTaskName').textContent = name;
+    $('startedAt').textContent = fmtTimeFull(current.startTs);
+    $('nowTime').textContent = fmtTimeFull(current.startTs);
+    $('elapsedTime').textContent = '00:00';
+    showRunning();
+    if(tickInterval) clearInterval(tickInterval);
+    tickInterval = setInterval(tick, 1000);
+  }
+
+  function tick(){
+    if(!current) return;
+    const elapsed = Date.now() - current.startTs;
+    $('elapsedTime').textContent = fmtElapsedShort(elapsed);
+  }
+
+  /* ===== Stop ===== */
+  stopBtn.addEventListener('click', stopTask);
+  function stopTask(){
+    if(!current) return;
+    if(tickInterval) clearInterval(tickInterval);
+    const endTs = Date.now();
+    const duration = endTs - current.startTs;
+    current.endTs = endTs;
+    current.duration = duration;
+    $('memoTaskName').textContent = `"${current.name}"`;
+    $('memoDuration').textContent = fmtDuration(duration);
+    $('memoMeta').textContent = `${fmtTime(current.startTs)} — ${fmtTime(current.endTs)}`;
+    memoText.value = '';
+    showMemo();
+  }
+
+  /* ===== Save ===== */
+  saveBtn.addEventListener('click', () => commitEntry(memoText.value.trim()));
+  skipBtn.addEventListener('click', () => commitEntry(''));
+
+  function commitEntry(memo){
+    if(!current) return;
+    const entry = {
+      id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
+      name: current.name,
+      startTs: current.startTs,
+      endTs: current.endTs,
+      duration: current.duration,
+      memo: memo
     };
+    entries.unshift(entry);
+    saveEntries();
+    current = null;
+    renderLedger();
+    showIdle();
+  }
 
-    // ====== RENDER ======
-    let activeCat = 'meals';
-    const tabsEl = document.getElementById('tabs');
-    const gridEl = document.getElementById('grid');
-    const bannerEl = document.getElementById('banner');
+  /* ===== Render ledger ===== */
+  function renderLedger(){
+    const todayEntries = entries.filter(e => isToday(e.startTs));
+    const list = $('ledgerList');
+    const empty = $('ledgerEmpty');
 
-    function renderTabs(){
-      tabsEl.innerHTML = '';
-      DATA.categories.forEach(c => {
-        const b = document.createElement('button');
-        b.className = 'tab' + (c.id===activeCat?' active':'');
-        b.textContent = c.label;
-        b.onclick = () => {
-          activeCat = c.id;
-          bannerEl.textContent = c.label.toUpperCase();
-          renderTabs(); // update active style
-          renderGrid(); // update list
-        };
-        tabsEl.appendChild(b);
+    $('statCount').textContent = todayEntries.length;
+    const totalMs = todayEntries.reduce((sum,e) => sum + e.duration, 0);
+    $('statTotal').textContent = fmtTotalShort(totalMs);
+
+    if(todayEntries.length === 0){
+      empty.style.display = 'block';
+      list.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = todayEntries.map(e => `
+      <li class="entry" data-id="${e.id}">
+        <button class="entry-delete" data-del="${e.id}" title="삭제">✕</button>
+        <div class="entry-top">
+          <div class="entry-name">${escapeHtml(e.name)}</div>
+          <div class="entry-duration">${fmtElapsedShort(e.duration)}</div>
+        </div>
+        <div class="entry-when">${fmtTime(e.startTs)} → ${fmtTime(e.endTs)} · ${fmtDuration(e.duration)}</div>
+        <div class="entry-memo ${e.memo ? '' : 'empty'}">${e.memo ? escapeHtml(e.memo) : '메모 없음'}</div>
+      </li>
+    `).join('');
+
+    list.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const id = btn.getAttribute('data-del');
+        if(confirm('이 기록을 삭제할까요?')){
+          entries = entries.filter(e => e.id !== id);
+          saveEntries();
+          renderLedger();
+        }
       });
-    }
+    });
+  }
 
-    function priceBlock(it){
-      if (it.options){
-        return '<div class="options">' + it.options.map(o=>`<span class="pill">${o.label}: ${krwToUSD(o.price)}</span>`).join(' ') + '</div>';
-      }
-      return `<div class="price">${krwToUSD(it.priceKRW)}</div>`;
+  /* ===== Reset ===== */
+  resetBtn.addEventListener('click', () => {
+    const todayEntries = entries.filter(e => isToday(e.startTs));
+    if(todayEntries.length === 0) return;
+    if(confirm(`오늘 기록 ${todayEntries.length}개를 모두 삭제할까요?`)){
+      entries = entries.filter(e => !isToday(e.startTs));
+      saveEntries();
+      renderLedger();
     }
+  });
 
-    function renderGrid(){
-      const filtered = DATA.items.filter(i => i.category===activeCat);
-      gridEl.innerHTML = '';
-      filtered.forEach(i => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img class="img" src="${i.img}" alt="${i.name}" loading="eager" onerror="this.onerror=null;this.src='images/placeholder.jpg'" />
-          <div class="pad">
-            <div class="name">${i.name}</div>
-            <p class="desc">${i.desc}</p>
-            ${priceBlock(i)}
-          </div>`;
-        gridEl.appendChild(card);
-      });
-      if(filtered.length===0){
-        gridEl.innerHTML = '<div style="opacity:.6;text-align:center;padding:24px">No items in this category yet.</div>';
-      }
+  /* ===== Init ===== */
+  renderLedger();
+  showIdle();
+
+  /* Keep nowTime updated even when not running */
+  setInterval(() => {
+    if(!current){
+      // idle clock already handled above
     }
-
-    function render(){ renderTabs(); renderGrid(); }
-    render();
-  </script>
+  }, 1000);
+</script>
 </body>
 </html>
