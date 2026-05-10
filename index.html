@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TimeLedger — 시간 가계부</title>
+<title>Time Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
@@ -71,53 +71,88 @@
   }
 
   .header{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 64px;
-  }
-
-  .brand{
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-  }
-  .brand-mark{
-    font-family: 'Fraunces', serif;
-    font-size: 28px;
-    font-weight: 600;
-    font-style: italic;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-  }
-  .brand-mark::first-letter{ color: var(--accent); }
-  .brand-tag{
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--ink-fade);
-    border-left: 1px solid var(--line);
-    padding-left: 12px;
+    position: relative;
+    margin-bottom: 56px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
   }
 
   .clock{
-    text-align: right;
+    text-align: center;
     font-family: 'IBM Plex Mono', monospace;
-  }
-  .clock-time{
-    font-size: 32px;
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    line-height: 1;
+    padding-top: 8px;
   }
   .clock-date{
-    font-size: 11px;
-    margin-top: 6px;
+    font-size: 12px;
     color: var(--ink-fade);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.3em;
+    margin-bottom: 16px;
+  }
+  .clock-time{
+    font-family: 'Fraunces', serif;
+    font-size: 96px;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-time .colon{
+    color: var(--accent);
+    animation: blink 1s ease-in-out infinite;
+    display: inline-block;
+    margin: 0 -2px;
+  }
+  .clock-time .seconds{
+    font-size: 0.4em;
+    color: var(--ink-fade);
+    font-weight: 300;
+    margin-left: 12px;
+    letter-spacing: 0;
+    vertical-align: super;
+    font-feature-settings: 'tnum';
+  }
+  @keyframes blink{
+    0%, 50%{ opacity: 1; }
+    51%, 100%{ opacity: 0.3; }
+  }
+
+  /* === MOTTO === */
+  .motto{
+    text-align: center;
+    margin-top: 36px;
+    padding: 0 20px;
+  }
+  .motto-title{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .motto-line{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .motto-line + .motto-line{
+    margin-top: 2px;
+  }
+  .motto-line.lead{
+    color: var(--ink);
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .motto-line.question{
+    font-style: italic;
+    color: var(--ink-soft);
   }
 
   /* === IDLE STATE === */
@@ -148,25 +183,58 @@
     max-width: 80px;
   }
 
-  .question{
+  /* === RANDOM QUOTE === */
+  .quote-block{
+    margin-bottom: 56px;
+    max-width: 720px;
+    position: relative;
+    padding-left: 28px;
+  }
+  .quote-block::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .quote-text{
     font-family: 'Fraunces', 'Noto Serif KR', serif;
-    font-size: 52px;
+    font-size: 30px;
     font-weight: 400;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
     color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .question em{
     font-style: italic;
+    margin-bottom: 14px;
+  }
+  .quote-text::before{
+    content: "“";
     color: var(--accent);
+    font-size: 1.1em;
+    margin-right: 4px;
+    font-style: normal;
   }
-  .question-sub{
-    font-size: 16px;
-    color: var(--ink-soft);
-    margin-bottom: 48px;
-    line-height: 1.5;
+  .quote-text::after{
+    content: "”";
+    color: var(--accent);
+    font-size: 1.1em;
+    margin-left: 4px;
+    font-style: normal;
   }
+  .quote-author{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-fade);
+  }
+  .quote-author::before{
+    content: "— ";
+  }
+  .quote-author.empty{ display: none; }
 
   .input-row{
     display: flex;
@@ -607,16 +675,22 @@
   @media (max-width: 1024px){
     .layout{ grid-template-columns: 1fr; height: auto; min-height: 100vh; }
     .main{ border-right: none; border-bottom: 1px solid var(--line); padding: 32px; }
-    .question{ font-size: 38px; }
+    .quote-text{ font-size: 24px; }
     .ledger{ padding: 32px; max-height: 60vh; }
     body{ overflow-y: auto; }
+    .clock-time{ font-size: 80px; }
   }
   @media (max-width: 540px){
     .main{ padding: 24px; }
-    .header{ flex-direction: column; gap: 16px; margin-bottom: 40px; }
-    .clock{ text-align: left; }
-    .clock-time{ font-size: 24px; }
-    .question{ font-size: 30px; }
+    .header{ margin-bottom: 36px; padding-bottom: 24px; }
+    .clock-time{ font-size: 56px; }
+    .clock-date{ font-size: 10px; margin-bottom: 10px; }
+    .clock-time .seconds{ font-size: 0.35em; margin-left: 6px; }
+    .motto{ margin-top: 24px; }
+    .motto-title{ font-size: 18px; }
+    .motto-line{ font-size: 13px; line-height: 1.7; }
+    .quote-text{ font-size: 20px; }
+    .quote-block{ padding-left: 18px; }
     .task-name-display{ font-size: 28px; }
     .elapsed .value{ font-size: 44px; }
     .timer-grid{ grid-template-columns: 1fr; gap: 20px; }
@@ -631,24 +705,29 @@
     <!-- ===== MAIN ===== -->
     <main class="main">
       <div class="header">
-        <div class="brand">
-          <span class="brand-mark"><em>T</em>imeLedger</span>
-          <span class="brand-tag">시간을 기록하다</span>
-        </div>
         <div class="clock">
-          <div class="clock-time" id="clockTime">--:--:--</div>
           <div class="clock-date" id="clockDate">—</div>
+          <div class="clock-time" id="clockTime">--<span class="colon">:</span>--<span class="seconds">--</span></div>
+        </div>
+        <div class="motto">
+          <div class="motto-title">Self-Assurance</div>
+          <div class="motto-line lead">Authenticity over everything. Let your aura be the proof.</div>
+          <div class="motto-line question">Was I a coward today? Didn't I compromise? Any lack of sincerity?</div>
+          <div class="motto-line">Surround yourself with those who grow.</div>
+          <div class="motto-line">Be responsible for every single moment.</div>
         </div>
       </div>
 
       <!-- IDLE -->
       <section class="stage idle" id="stageIdle">
-        <div class="eyebrow">새로운 작업 시작하기</div>
-        <h1 class="question">지금 <em>무엇</em>에<br/>시간을 쓰고 계신가요?</h1>
-        <p class="question-sub">작업의 이름을 적고 시작하세요. 끝나면 얼마나 걸렸는지, 무엇을 느꼈는지 기록할 수 있어요.</p>
+        <div class="eyebrow">Today's Reminder</div>
+        <div class="quote-block">
+          <div class="quote-text" id="quoteText">—</div>
+          <div class="quote-author" id="quoteAuthor"></div>
+        </div>
 
         <div class="input-row">
-          <input type="text" id="taskInput" placeholder="예: 분기 리포트 초안 작성" autocomplete="off" />
+          <input type="text" id="taskInput" placeholder="작업의 이름을 적어주세요" autocomplete="off" />
         </div>
 
         <button class="start-btn" id="startBtn" disabled>
@@ -701,7 +780,7 @@
     <!-- ===== LEDGER ===== -->
     <aside class="ledger">
       <div class="ledger-header">
-        <div class="ledger-title">Today's Ledger</div>
+        <div class="ledger-title">Today</div>
         <div class="ledger-subtitle">
           <span id="ledgerDate">—</span>
           <button class="reset-btn" id="resetBtn" title="오늘 기록 초기화">초기화</button>
@@ -715,7 +794,7 @@
         </div>
         <div class="stat">
           <div class="stat-num" id="statTotal">0m</div>
-          <div class="stat-label">총 집중시간</div>
+          <div class="stat-label">오늘 누적 시간</div>
         </div>
       </div>
 
@@ -731,10 +810,89 @@
 <script>
   /* ===== State ===== */
   const STORAGE_KEY = 'timeledger.entries.v1';
+  const QUOTE_INDEX_KEY = 'timeledger.quoteIndex.v1';
   let entries = loadEntries();
   let current = null;       // { name, startTs }
   let tickInterval = null;
   let clockInterval = null;
+
+  /* ===== Quotes (from The Vault Of Motivational Quotes) ===== */
+  const QUOTES = [
+    { t: "Thoughts lead on to purposes; purposes go forth in action; actions form habits; habits decide character; and character fixes our destiny.", a: "Tyron Edwards" },
+    { t: "Never say anything about yourself you do not want to come true.", a: "Brian Tracy" },
+    { t: "The great and glorious masterpiece of man is to know how to live to purpose.", a: "Michel de Montaigne" },
+    { t: "Keep away from those who try to belittle your ambitions. Small people always do that, but the really great make you believe that you too can become great.", a: "Mark Twain" },
+    { t: "Try not to become a man of success but a man of value.", a: "Albert Einstein" },
+    { t: "A wise man learns by the mistakes of others, a fool by his own.", a: "Latin Proverb" },
+    { t: "By associating with wise people you will become wise yourself.", a: "Menander" },
+    { t: "Knowing yourself is the beginning of all wisdom.", a: "Aristotle" },
+    { t: "The greatest mistake you can make in life is to continually be afraid you will make one.", a: "Elbert Hubbard" },
+    { t: "Will this matter a year from now?", a: "Richard Carlson" },
+    { t: "Difficulties are meant to rouse, not discourage. The human spirit is to grow strong by conflict.", a: "" },
+    { t: "Failure is nature's plan to prepare you for great responsibilities.", a: "Napoleon Hill" },
+    { t: "If you do not conquer self, you will be conquered by self.", a: "Napoleon Hill" },
+    { t: "If your actions inspire others to dream more, learn more, do more and become more, you are a leader.", a: "John Quincy Adams" },
+    { t: "Change and growth take place when a person has risked himself and dares to become involved with experimenting with his own life.", a: "Herbert Otto" },
+    { t: "We learn wisdom from failure much more than success. We often discover what we will do, by finding out what we will not do.", a: "Samuel Smiles" },
+    { t: "You can become an even more excellent person by constantly setting higher and higher standards for yourself and then by doing everything possible to live up to those standards.", a: "Brian Tracy" },
+    { t: "To do great things is difficult; but to command great things is more difficult.", a: "Friedrich Nietzsche" },
+    { t: "Nobody made a greater mistake than he who did nothing because he could do only a little.", a: "Edmund Burke" },
+    { t: "Go confidently in the direction of your dreams. Live the life you have imagined.", a: "Henry David Thoreau" },
+    { t: "Whatever you can do, or dream you can do, begin it. Boldness has genius, power and magic in it.", a: "Johann Wolfgang von Goethe" },
+    { t: "There is nothing impossible to him who will try.", a: "Alexander the Great" },
+    { t: "Failures do what is tension relieving, while winners do what is goal achieving.", a: "Dennis Waitley" },
+    { t: "If you don't know where you are going, you'll end up someplace else.", a: "Yogi Berra" },
+    { t: "The seat of knowledge is in the head, of wisdom, in the heart.", a: "William Hazlitt" },
+    { t: "A loving heart is the truest wisdom.", a: "Charles Dickens" },
+    { t: "Great effort from great motives is the best definition of a happy life.", a: "William Ellery Channing" },
+    { t: "No man is happy who does not think himself so.", a: "Publilius Syrus" },
+    { t: "Know thyself means this, that you get acquainted with what you know, and what you can do.", a: "Menander" },
+    { t: "If we do not plant knowledge when young, it will give us no shade when we are old.", a: "Lord Chesterfield" },
+    { t: "Follow your honest convictions, and stay strong.", a: "William Thackeray" },
+    { t: "Every day do something that will inch you closer to a better tomorrow.", a: "Doug Firebaugh" },
+    { t: "A man who finds no satisfaction in himself will seek for it in vain elsewhere.", a: "La Rochefoucauld" },
+    { t: "I failed my way to success.", a: "Thomas Edison" },
+    { t: "Our doubts are traitors, and make us lose the good we oft might win, by fearing to attempt.", a: "William Shakespeare" },
+    { t: "Every failure brings with it the seed of an equivalent success.", a: "Napoleon Hill" },
+    { t: "What would life be if we had no courage to attempt anything?", a: "Vincent van Gogh" },
+    { t: "There is no failure except in no longer trying.", a: "Elbert Hubbard" },
+    { t: "The mind that is anxious about future events is miserable.", a: "Seneca" },
+    { t: "Don't ask for a light load, but rather ask for a strong back.", a: "" },
+    { t: "A man is but the product of his thoughts. What he thinks, he becomes.", a: "Mahatma Gandhi" },
+    { t: "I never did a day's work in my life. It was all fun.", a: "Thomas Edison" },
+    { t: "How am I going to live today in order to create the tomorrow I'm committed to?", a: "Tony Robbins" },
+    { t: "It's not knowing what to do, it's doing what you know.", a: "Tony Robbins" },
+    { t: "Successful people are simply those with successful habits.", a: "Brian Tracy" },
+    { t: "What the mind of man can conceive and believe, it can achieve.", a: "Napoleon Hill" },
+    { t: "Move out of your comfort zone. You can only grow if you are willing to feel awkward and uncomfortable when you try something new.", a: "Brian Tracy" },
+    { t: "Be faithful in small things because it is in them that your strength lies.", a: "Mother Teresa" },
+    { t: "Many of life's failures are people who did not realize how close they were to success when they gave up.", a: "Thomas Edison" },
+    { t: "I challenge you to make your life a masterpiece. I challenge you to join the ranks of those people who live what they teach, who walk their talk.", a: "Tony Robbins" },
+    { t: "It's not what we do once in a while that shapes our lives, but what we do consistently.", a: "Tony Robbins" },
+    { t: "Happiness does not come from doing easy work but from the afterglow of satisfaction that comes after the achievement of a difficult task that demanded our best.", a: "Theodore Isaac Rubin" },
+    { t: "Leadership does not always wear the harness of compromise.", a: "Woodrow Wilson" },
+    { t: "Well done is better than well said.", a: "Benjamin Franklin" },
+    { t: "Life is a great big canvas, and you should throw all the paint you can on it.", a: "Danny Kaye" },
+    { t: "It is surmounting difficulties that makes heroes.", a: "Lajos Kossuth" },
+    { t: "Minds are like parachutes — they only function when open.", a: "Thomas Dewar" },
+    { t: "You will never find time for anything. If you want the time, you must make it.", a: "Charles Buxton" },
+    { t: "There is no security in this life. There is only opportunity.", a: "Douglas MacArthur" },
+    { t: "Failure is only the opportunity to begin again more intelligently.", a: "Henry Ford" },
+    { t: "Experience is the child of thought, and thought is the child of action.", a: "Benjamin Disraeli" },
+    { t: "No great man ever complains of want of opportunities.", a: "Ralph Waldo Emerson" },
+    { t: "Men do less than they ought, unless they do all they can.", a: "Thomas Carlyle" },
+    { t: "The ultimate measure of a man is not where he stands in moments of comfort, but where he stands at times of challenge and controversy.", a: "Martin Luther King, Jr." },
+    { t: "Where there is no vision, the people perish.", a: "Proverbs 29:18" },
+    { t: "A bold onset is half the battle.", a: "Giuseppe Garibaldi" },
+    { t: "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.", a: "Ralph Waldo Emerson" },
+    { t: "The reasonable man adapts himself to the world; the unreasonable one persists in trying to adapt the world to himself. Therefore all progress depends on the unreasonable man.", a: "George Bernard Shaw" },
+    { t: "If you can't make a mistake, you can't make anything.", a: "Marva Collins" },
+    { t: "Whether you think you can or whether you think you can't, you're right.", a: "Henry Ford" },
+    { t: "Action may not always bring happiness, but there is no happiness without action.", a: "Benjamin Disraeli" },
+    { t: "Do not go where the path may lead, go instead where there is no path and leave a trail.", a: "Ralph Waldo Emerson" },
+    { t: "A leader is a dealer in hope.", a: "Napoleon Bonaparte" },
+    { t: "Bite off more than you can chew, then chew it.", a: "Ella Williams" }
+  ];
 
   /* ===== DOM refs ===== */
   const $ = (id) => document.getElementById(id);
@@ -774,8 +932,13 @@
   }
   function fmtDateKr(ts){
     const d = new Date(ts);
+    const days = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+    return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 · ${days[d.getDay()]}`;
+  }
+  function fmtDateShort(ts){
+    const d = new Date(ts);
     const days = ['일','월','화','수','목','금','토'];
-    return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} (${days[d.getDay()]})`;
+    return `${pad(d.getMonth()+1)}.${pad(d.getDate())} (${days[d.getDay()]})`;
   }
   function fmtDuration(ms){
     const sec = Math.floor(ms/1000);
@@ -815,9 +978,13 @@
   /* ===== Clock ===== */
   function updateClock(){
     const now = Date.now();
-    $('clockTime').textContent = fmtTimeFull(now);
+    const d = new Date(now);
+    const hh = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+    $('clockTime').innerHTML = `${hh}<span class="colon">:</span>${mm}<span class="seconds">${ss}</span>`;
     $('clockDate').textContent = fmtDateKr(now);
-    $('ledgerDate').textContent = fmtDateKr(now);
+    $('ledgerDate').textContent = fmtDateShort(now);
     if(current){
       $('nowTime').textContent = fmtTimeFull(now);
     }
@@ -964,15 +1131,42 @@
   });
 
   /* ===== Init ===== */
+  renderQuote();
   renderLedger();
   showIdle();
 
-  /* Keep nowTime updated even when not running */
-  setInterval(() => {
-    if(!current){
-      // idle clock already handled above
+  /* ===== Quote rotation =====
+     매번 페이지를 열거나 새로고침할 때 다른 명언을 보여줌.
+     단순 랜덤은 같은 게 연달아 나올 수 있어서, 직전에 보여준 인덱스를 저장해
+     중복을 피함. */
+  function renderQuote(){
+    let lastIdx = -1;
+    try{
+      const stored = localStorage.getItem(QUOTE_INDEX_KEY);
+      if(stored !== null) lastIdx = parseInt(stored, 10);
+    } catch(e){}
+
+    let idx = Math.floor(Math.random() * QUOTES.length);
+    // 직전과 같으면 한 번 다시 뽑기 (충분히 랜덤)
+    if(QUOTES.length > 1 && idx === lastIdx){
+      idx = (idx + 1 + Math.floor(Math.random() * (QUOTES.length - 1))) % QUOTES.length;
     }
-  }, 1000);
+    try{ localStorage.setItem(QUOTE_INDEX_KEY, String(idx)); } catch(e){}
+
+    const q = QUOTES[idx];
+    const tEl = document.getElementById('quoteText');
+    const aEl = document.getElementById('quoteAuthor');
+    tEl.textContent = q.t;
+    if(q.a){
+      aEl.textContent = q.a;
+      aEl.classList.remove('empty');
+    } else {
+      aEl.textContent = '';
+      aEl.classList.add('empty');
+    }
+  }
+
+  /* Keep nowTime updated by clockInterval already */
 </script>
 </body>
 </html>
