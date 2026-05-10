@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 <style>
   :root{
     --paper: #f5efe2;
@@ -90,32 +91,37 @@
     margin-bottom: 16px;
   }
   .clock-time{
-    font-family: 'Fraunces', serif;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 96px;
     font-weight: 300;
     letter-spacing: -0.04em;
     color: var(--ink);
-    line-height: 0.95;
+    line-height: 1;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0;
     font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
   }
+  /* 시·분·초 숫자 — 각각 고정폭으로 폭 흔들림 차단 */
+  .clock-time .hh,
+  .clock-time .mm,
+  .clock-time .ss{
+    display: inline-block;
+    width: 1.15em;
+    text-align: center;
+  }
+  /* 콜론 — opacity만 바뀌게, 폭 고정 */
   .clock-time .colon{
     color: var(--accent);
-    animation: blink 1s ease-in-out infinite;
     display: inline-block;
-    margin: 0 -2px;
-  }
-  .clock-time .seconds{
-    font-size: 0.4em;
-    color: var(--ink-fade);
-    font-weight: 300;
-    margin-left: 12px;
-    letter-spacing: 0;
-    vertical-align: super;
-    font-feature-settings: 'tnum';
+    width: 0.35em;
+    text-align: center;
+    animation: blink 1.2s steps(2, end) infinite;
   }
   @keyframes blink{
-    0%, 50%{ opacity: 1; }
-    51%, 100%{ opacity: 0.3; }
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: 0.25; }
   }
 
   /* === MOTTO === */
@@ -685,7 +691,6 @@
     .header{ margin-bottom: 36px; padding-bottom: 24px; }
     .clock-time{ font-size: 56px; }
     .clock-date{ font-size: 10px; margin-bottom: 10px; }
-    .clock-time .seconds{ font-size: 0.35em; margin-left: 6px; }
     .motto{ margin-top: 24px; }
     .motto-title{ font-size: 18px; }
     .motto-line{ font-size: 13px; line-height: 1.7; }
@@ -707,7 +712,7 @@
       <div class="header">
         <div class="clock">
           <div class="clock-date" id="clockDate">—</div>
-          <div class="clock-time" id="clockTime">--<span class="colon">:</span>--<span class="seconds">--</span></div>
+          <div class="clock-time" id="clockTime"><span class="hh">--</span><span class="colon">:</span><span class="mm">--</span><span class="colon">:</span><span class="ss">--</span></div>
         </div>
         <div class="motto">
           <div class="motto-title">Self-Assurance</div>
@@ -975,14 +980,23 @@
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  /* ===== Clock ===== */
+  /* ===== Clock =====
+     주의: 매초 innerHTML을 갈아끼우면 .colon 애니메이션이 리셋됨.
+     각 span의 textContent만 업데이트해서 애니메이션이 끊기지 않게 함. */
+  const clockEl = $('clockTime');
+  const hhEl = clockEl.querySelector('.hh');
+  const mmEl = clockEl.querySelector('.mm');
+  const ssEl = clockEl.querySelector('.ss');
+
   function updateClock(){
     const now = Date.now();
     const d = new Date(now);
     const hh = pad(d.getHours());
     const mm = pad(d.getMinutes());
     const ss = pad(d.getSeconds());
-    $('clockTime').innerHTML = `${hh}<span class="colon">:</span>${mm}<span class="seconds">${ss}</span>`;
+    if(hhEl.textContent !== hh) hhEl.textContent = hh;
+    if(mmEl.textContent !== mm) mmEl.textContent = mm;
+    if(ssEl.textContent !== ss) ssEl.textContent = ss;
     $('clockDate').textContent = fmtDateKr(now);
     $('ledgerDate').textContent = fmtDateShort(now);
     if(current){
