@@ -32,7 +32,6 @@
     position: relative;
   }
 
-  /* 종이 질감 — noise */
   body::before{
     content:"";
     position: fixed; inset: 0;
@@ -45,7 +44,7 @@
   body::after{
     content:"";
     position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.5 0 0 0 0 0.3 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.5 0 0 0 0 0.3 0 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     opacity: 0.35;
     mix-blend-mode: multiply;
     pointer-events: none;
@@ -61,7 +60,6 @@
     gap: 0;
   }
 
-  /* === LEFT: MAIN === */
   .main{
     padding: 48px 64px;
     display: flex;
@@ -103,7 +101,6 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum' 1, 'lnum' 1;
   }
-  /* 시·분·초 숫자 — 각각 고정폭으로 폭 흔들림 차단 */
   .clock-time .hh,
   .clock-time .mm,
   .clock-time .ss{
@@ -111,7 +108,6 @@
     width: 1.15em;
     text-align: center;
   }
-  /* 콜론 — opacity만 바뀌게, 폭 고정 */
   .clock-time .colon{
     color: var(--accent);
     display: inline-block;
@@ -124,7 +120,6 @@
     50%{ opacity: 0.25; }
   }
 
-  /* === MOTTO === */
   .motto{
     text-align: center;
     margin-top: 36px;
@@ -161,7 +156,6 @@
     color: var(--ink-soft);
   }
 
-  /* === IDLE STATE === */
   .stage{
     flex: 1;
     display: flex;
@@ -189,7 +183,6 @@
     max-width: 80px;
   }
 
-  /* === RANDOM QUOTE === */
   .quote-block{
     margin-bottom: 56px;
     max-width: 720px;
@@ -217,14 +210,14 @@
     margin-bottom: 14px;
   }
   .quote-text::before{
-    content: "“";
+    content: "\201C";
     color: var(--accent);
     font-size: 1.1em;
     margin-right: 4px;
     font-style: normal;
   }
   .quote-text::after{
-    content: "”";
+    content: "\201D";
     color: var(--accent);
     font-size: 1.1em;
     margin-left: 4px;
@@ -238,7 +231,7 @@
     color: var(--ink-fade);
   }
   .quote-author::before{
-    content: "— ";
+    content: "\2014 ";
   }
   .quote-author.empty{ display: none; }
 
@@ -304,7 +297,6 @@
     margin-left: 4px;
   }
 
-  /* === RUNNING STATE === */
   .running{
     display: none;
     flex-direction: column;
@@ -412,7 +404,6 @@
     transform: translateY(-2px);
   }
 
-  /* === MEMO STATE === */
   .memo{
     display: none;
     flex-direction: column;
@@ -511,7 +502,6 @@
   }
   .skip-btn:hover{ color: var(--ink); }
 
-  /* === RIGHT: LEDGER === */
   .ledger{
     background: var(--paper-2);
     padding: 40px 32px;
@@ -662,7 +652,6 @@
   .entry:hover .entry-delete{ opacity: 1; }
   .entry-delete:hover{ background: rgba(194,65,12,0.1); color: var(--accent); }
 
-  /* Reset */
   .reset-btn{
     background: transparent;
     border: none;
@@ -677,7 +666,159 @@
   }
   .reset-btn:hover{ color: var(--accent); }
 
-  /* Responsive */
+  /* ===== AUTH SCREEN ===== */
+  .auth-overlay{
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .auth-overlay.active{ display: flex; }
+  .auth-card{
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+  }
+  .auth-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .auth-title{
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .auth-subtitle{
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .auth-field{
+    margin-bottom: 20px;
+  }
+  .auth-field label{
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-fade);
+    margin-bottom: 8px;
+  }
+  .auth-field input{
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--ink);
+    background: transparent;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    color: var(--ink);
+    outline: none;
+    padding: 8px 0;
+    transition: border-color 0.25s;
+  }
+  .auth-field input:focus{ border-color: var(--accent); }
+  .auth-error{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 4px;
+    min-height: 16px;
+    letter-spacing: 0.05em;
+  }
+  .auth-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .auth-btn{
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 16px 32px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+    box-shadow: var(--shadow);
+  }
+  .auth-btn:hover{
+    background: var(--accent);
+    transform: translateY(-2px);
+  }
+  .auth-btn:disabled{ opacity: 0.4; cursor: not-allowed; transform: none; }
+  .auth-toggle{
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    padding: 8px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .auth-toggle:hover{ color: var(--accent); }
+
+  .user-bar{
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.15em;
+    z-index: 10;
+  }
+  .user-email{ text-transform: lowercase; letter-spacing: 0.05em; }
+  .signout-btn{
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--ink-fade);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 4px 8px;
+  }
+  .signout-btn:hover{ color: var(--accent); }
+
+  .sync-status{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-fade);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    min-height: 14px;
+  }
+  .sync-status.syncing{ color: var(--accent); }
+
   @media (max-width: 1024px){
     .layout{ grid-template-columns: 1fr; height: auto; min-height: 100vh; }
     .main{ border-right: none; border-bottom: 1px solid var(--line); padding: 32px; }
@@ -701,13 +842,44 @@
     .timer-grid{ grid-template-columns: 1fr; gap: 20px; }
     .time-block.right{ text-align: left; }
     .ledger{ padding: 24px; }
+    .auth-title{ font-size: 28px; }
+    .user-bar{ top: 8px; right: 12px; }
   }
 </style>
 </head>
 <body>
-  <div class="layout">
 
-    <!-- ===== MAIN ===== -->
+  <!-- ===== AUTH OVERLAY ===== -->
+  <div class="auth-overlay active" id="authOverlay">
+    <div class="auth-card">
+      <div class="auth-eyebrow">Time Tracker</div>
+      <h1 class="auth-title" id="authTitle">Sign in</h1>
+      <p class="auth-subtitle" id="authSubtitle">기록을 모든 기기에서 이어쓰기 위해 로그인하세요.</p>
+
+      <div class="auth-field">
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" autocomplete="email" />
+      </div>
+      <div class="auth-field">
+        <label for="authPassword">Password</label>
+        <input type="password" id="authPassword" autocomplete="current-password" />
+      </div>
+      <div class="auth-error" id="authError"></div>
+
+      <div class="auth-actions">
+        <button class="auth-btn" id="authSubmit">로그인</button>
+        <button class="auth-toggle" id="authToggle">계정이 없으신가요? 회원가입</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout" id="appLayout" style="display:none;">
+
+    <div class="user-bar">
+      <span class="user-email" id="userEmail">—</span>
+      <button class="signout-btn" id="signoutBtn">Sign out</button>
+    </div>
+
     <main class="main">
       <div class="header">
         <div class="clock">
@@ -723,7 +895,6 @@
         </div>
       </div>
 
-      <!-- IDLE -->
       <section class="stage idle" id="stageIdle">
         <div class="eyebrow">Today's Reminder</div>
         <div class="quote-block">
@@ -741,7 +912,6 @@
         </button>
       </section>
 
-      <!-- RUNNING -->
       <section class="running" id="stageRunning">
         <div class="running-eyebrow">
           <span class="pulse"></span>
@@ -767,7 +937,6 @@
         <button class="stop-btn" id="stopBtn">종료하기</button>
       </section>
 
-      <!-- MEMO -->
       <section class="memo" id="stageMemo">
         <div class="memo-eyebrow">작업 완료</div>
         <h2 class="memo-summary"><em id="memoTaskName">—</em>에 <em id="memoDuration">—</em> 썼어요.</h2>
@@ -782,7 +951,6 @@
       </section>
     </main>
 
-    <!-- ===== LEDGER ===== -->
     <aside class="ledger">
       <div class="ledger-header">
         <div class="ledger-title">Today</div>
@@ -790,6 +958,7 @@
           <span id="ledgerDate">—</span>
           <button class="reset-btn" id="resetBtn" title="오늘 기록 초기화">초기화</button>
         </div>
+        <div class="sync-status" id="syncStatus"></div>
       </div>
 
       <div class="ledger-stats">
@@ -812,16 +981,25 @@
 
   </div>
 
-<script>
+<script type="module">
+  /* ========================================
+     1. SUPABASE CONFIG — 여기 두 줄만 본인 값으로 바꾸세요
+     ======================================== */
+  const SUPABASE_URL = 'https://glwcbkjgvowjiusqpprp.supabase.co/rest/v1/';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsd2Nia2pndm93aml1c3FwcHJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODk5NTUsImV4cCI6MjA5NDA2NTk1NX0.irhgT5G4oemtus1OZGVbbXgFcIPifO59ye5zFMspssg';
+
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   /* ===== State ===== */
-  const STORAGE_KEY = 'timeledger.entries.v1';
   const QUOTE_INDEX_KEY = 'timeledger.quoteIndex.v1';
-  let entries = loadEntries();
+  let entries = [];
+  let currentUser = null;
   let current = null;       // { name, startTs }
   let tickInterval = null;
   let clockInterval = null;
 
-  /* ===== Quotes (from The Vault Of Motivational Quotes) ===== */
+  /* ===== Quotes ===== */
   const QUOTES = [
     { t: "Thoughts lead on to purposes; purposes go forth in action; actions form habits; habits decide character; and character fixes our destiny.", a: "Tyron Edwards" },
     { t: "Never say anything about yourself you do not want to come true.", a: "Brian Tracy" },
@@ -879,7 +1057,7 @@
     { t: "Well done is better than well said.", a: "Benjamin Franklin" },
     { t: "Life is a great big canvas, and you should throw all the paint you can on it.", a: "Danny Kaye" },
     { t: "It is surmounting difficulties that makes heroes.", a: "Lajos Kossuth" },
-    { t: "Minds are like parachutes — they only function when open.", a: "Thomas Dewar" },
+    { t: "Minds are like parachutes \u2014 they only function when open.", a: "Thomas Dewar" },
     { t: "You will never find time for anything. If you want the time, you must make it.", a: "Charles Buxton" },
     { t: "There is no security in this life. There is only opportunity.", a: "Douglas MacArthur" },
     { t: "Failure is only the opportunity to begin again more intelligently.", a: "Henry Ford" },
@@ -901,6 +1079,8 @@
 
   /* ===== DOM refs ===== */
   const $ = (id) => document.getElementById(id);
+  const authOverlay = $('authOverlay');
+  const appLayout = $('appLayout');
   const stageIdle = $('stageIdle');
   const stageRunning = $('stageRunning');
   const stageMemo = $('stageMemo');
@@ -911,30 +1091,12 @@
   const skipBtn = $('skipBtn');
   const resetBtn = $('resetBtn');
   const memoText = $('memoText');
-
-  /* ===== Storage ===== */
-  function loadEntries(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return [];
-      return JSON.parse(raw);
-    } catch(e){ return []; }
-  }
-  function saveEntries(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
-    catch(e){ console.warn('save failed', e); }
-  }
+  const syncStatus = $('syncStatus');
 
   /* ===== Helpers ===== */
   function pad(n){ return String(n).padStart(2,'0'); }
-  function fmtTime(ts){
-    const d = new Date(ts);
-    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-  function fmtTimeFull(ts){
-    const d = new Date(ts);
-    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-  }
+  function fmtTime(ts){ const d=new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+  function fmtTimeFull(ts){ const d=new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
   function fmtDateKr(ts){
     const d = new Date(ts);
     const days = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
@@ -979,10 +1141,15 @@
   function escapeHtml(s){
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
+  function setSyncStatus(text, isActive){
+    syncStatus.textContent = text;
+    syncStatus.classList.toggle('syncing', !!isActive);
+    if(!isActive && text){
+      setTimeout(() => { if(syncStatus.textContent === text) syncStatus.textContent = ''; }, 2000);
+    }
+  }
 
-  /* ===== Clock =====
-     주의: 매초 innerHTML을 갈아끼우면 .colon 애니메이션이 리셋됨.
-     각 span의 textContent만 업데이트해서 애니메이션이 끊기지 않게 함. */
+  /* ===== Clock ===== */
   const clockEl = $('clockTime');
   const hhEl = clockEl.querySelector('.hh');
   const mmEl = clockEl.querySelector('.mm');
@@ -1003,8 +1170,6 @@
       $('nowTime').textContent = fmtTimeFull(now);
     }
   }
-  clockInterval = setInterval(updateClock, 1000);
-  updateClock();
 
   /* ===== Stage transitions ===== */
   function showIdle(){
@@ -1027,7 +1192,82 @@
     setTimeout(() => memoText.focus(), 100);
   }
 
-  /* ===== Start ===== */
+  /* ===== Supabase data ops ===== */
+  function rowToEntry(row){
+    return {
+      id: row.id,
+      name: row.name,
+      startTs: Number(row.start_ts),
+      endTs: Number(row.end_ts),
+      duration: Number(row.duration),
+      memo: row.memo || ''
+    };
+  }
+
+  async function fetchEntries(){
+    if(!currentUser) return;
+    setSyncStatus('Syncing…', true);
+    const { data, error } = await sb
+      .from('entries')
+      .select('*')
+      .order('start_ts', { ascending: false });
+    if(error){
+      console.error(error);
+      setSyncStatus('Sync failed', false);
+      return;
+    }
+    entries = (data || []).map(rowToEntry);
+    renderLedger();
+    setSyncStatus('Synced', false);
+  }
+
+  async function insertEntry(entry){
+    if(!currentUser) return;
+    setSyncStatus('Saving…', true);
+    const payload = {
+      id: entry.id,
+      user_id: currentUser.id,
+      name: entry.name,
+      start_ts: entry.startTs,
+      end_ts: entry.endTs,
+      duration: entry.duration,
+      memo: entry.memo
+    };
+    const { error } = await sb.from('entries').insert(payload);
+    if(error){
+      console.error(error);
+      setSyncStatus('Save failed', false);
+      alert('저장에 실패했어요. 콘솔을 확인해주세요.\n' + error.message);
+      return;
+    }
+    setSyncStatus('Saved', false);
+  }
+
+  async function deleteEntry(id){
+    if(!currentUser) return;
+    setSyncStatus('Deleting…', true);
+    const { error } = await sb.from('entries').delete().eq('id', id);
+    if(error){
+      console.error(error);
+      setSyncStatus('Delete failed', false);
+      return;
+    }
+    setSyncStatus('Deleted', false);
+  }
+
+  async function deleteEntries(ids){
+    if(!currentUser || ids.length === 0) return;
+    setSyncStatus('Deleting…', true);
+    const { error } = await sb.from('entries').delete().in('id', ids);
+    if(error){
+      console.error(error);
+      setSyncStatus('Delete failed', false);
+      return;
+    }
+    setSyncStatus('Deleted', false);
+  }
+
+  /* ===== Task flow ===== */
   taskInput.addEventListener('input', () => {
     startBtn.disabled = taskInput.value.trim().length === 0;
   });
@@ -1055,7 +1295,6 @@
     $('elapsedTime').textContent = fmtElapsedShort(elapsed);
   }
 
-  /* ===== Stop ===== */
   stopBtn.addEventListener('click', stopTask);
   function stopTask(){
     if(!current) return;
@@ -1071,11 +1310,10 @@
     showMemo();
   }
 
-  /* ===== Save ===== */
   saveBtn.addEventListener('click', () => commitEntry(memoText.value.trim()));
   skipBtn.addEventListener('click', () => commitEntry(''));
 
-  function commitEntry(memo){
+  async function commitEntry(memo){
     if(!current) return;
     const entry = {
       id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
@@ -1085,11 +1323,12 @@
       duration: current.duration,
       memo: memo
     };
+    // 낙관적 업데이트
     entries.unshift(entry);
-    saveEntries();
-    current = null;
     renderLedger();
+    current = null;
     showIdle();
+    await insertEntry(entry);
   }
 
   /* ===== Render ledger ===== */
@@ -1121,66 +1360,181 @@
     `).join('');
 
     list.querySelectorAll('[data-del]').forEach(btn => {
-      btn.addEventListener('click', (ev) => {
+      btn.addEventListener('click', async (ev) => {
         ev.stopPropagation();
         const id = btn.getAttribute('data-del');
         if(confirm('이 기록을 삭제할까요?')){
           entries = entries.filter(e => e.id !== id);
-          saveEntries();
           renderLedger();
+          await deleteEntry(id);
         }
       });
     });
   }
 
-  /* ===== Reset ===== */
-  resetBtn.addEventListener('click', () => {
+  resetBtn.addEventListener('click', async () => {
     const todayEntries = entries.filter(e => isToday(e.startTs));
     if(todayEntries.length === 0) return;
     if(confirm(`오늘 기록 ${todayEntries.length}개를 모두 삭제할까요?`)){
+      const ids = todayEntries.map(e => e.id);
       entries = entries.filter(e => !isToday(e.startTs));
-      saveEntries();
       renderLedger();
+      await deleteEntries(ids);
     }
   });
 
-  /* ===== Init ===== */
-  renderQuote();
-  renderLedger();
-  showIdle();
-
-  /* ===== Quote rotation =====
-     매번 페이지를 열거나 새로고침할 때 다른 명언을 보여줌.
-     단순 랜덤은 같은 게 연달아 나올 수 있어서, 직전에 보여준 인덱스를 저장해
-     중복을 피함. */
+  /* ===== Quote ===== */
   function renderQuote(){
     let lastIdx = -1;
     try{
       const stored = localStorage.getItem(QUOTE_INDEX_KEY);
       if(stored !== null) lastIdx = parseInt(stored, 10);
     } catch(e){}
-
     let idx = Math.floor(Math.random() * QUOTES.length);
-    // 직전과 같으면 한 번 다시 뽑기 (충분히 랜덤)
     if(QUOTES.length > 1 && idx === lastIdx){
       idx = (idx + 1 + Math.floor(Math.random() * (QUOTES.length - 1))) % QUOTES.length;
     }
     try{ localStorage.setItem(QUOTE_INDEX_KEY, String(idx)); } catch(e){}
-
     const q = QUOTES[idx];
-    const tEl = document.getElementById('quoteText');
-    const aEl = document.getElementById('quoteAuthor');
+    const tEl = $('quoteText');
+    const aEl = $('quoteAuthor');
     tEl.textContent = q.t;
-    if(q.a){
-      aEl.textContent = q.a;
-      aEl.classList.remove('empty');
+    if(q.a){ aEl.textContent = q.a; aEl.classList.remove('empty'); }
+    else { aEl.textContent = ''; aEl.classList.add('empty'); }
+  }
+
+  /* ===== AUTH ===== */
+  let authMode = 'signin'; // 'signin' | 'signup'
+  const authTitle = $('authTitle');
+  const authSubtitle = $('authSubtitle');
+  const authSubmit = $('authSubmit');
+  const authToggle = $('authToggle');
+  const authEmail = $('authEmail');
+  const authPassword = $('authPassword');
+  const authError = $('authError');
+
+  function setAuthMode(mode){
+    authMode = mode;
+    if(mode === 'signin'){
+      authTitle.textContent = 'Sign in';
+      authSubtitle.textContent = '기록을 모든 기기에서 이어쓰기 위해 로그인하세요.';
+      authSubmit.textContent = '로그인';
+      authToggle.textContent = '계정이 없으신가요? 회원가입';
     } else {
-      aEl.textContent = '';
-      aEl.classList.add('empty');
+      authTitle.textContent = 'Create account';
+      authSubtitle.textContent = '이메일과 비밀번호를 등록해주세요. 다른 기기에서도 같은 계정으로 로그인하면 기록이 동기화돼요.';
+      authSubmit.textContent = '회원가입';
+      authToggle.textContent = '이미 계정이 있나요? 로그인';
+    }
+    authError.textContent = '';
+  }
+
+  authToggle.addEventListener('click', () => {
+    setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+  });
+
+  authSubmit.addEventListener('click', handleAuthSubmit);
+  authPassword.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') handleAuthSubmit();
+  });
+  authEmail.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') authPassword.focus();
+  });
+
+  async function handleAuthSubmit(){
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    if(!email || !password){
+      authError.textContent = '이메일과 비밀번호를 입력해주세요.';
+      return;
+    }
+    if(password.length < 6){
+      authError.textContent = '비밀번호는 6자 이상이어야 해요.';
+      return;
+    }
+    authSubmit.disabled = true;
+    authError.textContent = '';
+
+    try{
+      if(authMode === 'signin'){
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if(error) throw error;
+      } else {
+        const { data, error } = await sb.auth.signUp({ email, password });
+        if(error) throw error;
+        if(data.user && !data.session){
+          authError.textContent = '이메일로 발송된 확인 링크를 클릭한 뒤 로그인해주세요.';
+          authSubmit.disabled = false;
+          return;
+        }
+      }
+    } catch(err){
+      console.error(err);
+      authError.textContent = err.message || '인증에 실패했어요.';
+      authSubmit.disabled = false;
     }
   }
 
-  /* Keep nowTime updated by clockInterval already */
+  $('signoutBtn').addEventListener('click', async () => {
+    await sb.auth.signOut();
+  });
+
+  async function enterApp(user){
+    currentUser = user;
+    $('userEmail').textContent = user.email || '익명';
+    authOverlay.classList.remove('active');
+    appLayout.style.display = 'grid';
+    document.body.style.overflow = '';
+    authSubmit.disabled = false;
+    authEmail.value = '';
+    authPassword.value = '';
+
+    if(!clockInterval){
+      clockInterval = setInterval(updateClock, 1000);
+      updateClock();
+    }
+    renderQuote();
+    showIdle();
+    await fetchEntries();
+  }
+
+  function exitApp(){
+    currentUser = null;
+    entries = [];
+    if(tickInterval){ clearInterval(tickInterval); tickInterval = null; }
+    current = null;
+    appLayout.style.display = 'none';
+    authOverlay.classList.add('active');
+    setAuthMode('signin');
+    setTimeout(() => authEmail.focus(), 100);
+  }
+
+  /* ===== Init ===== */
+  (async function init(){
+    // 설정 안 됨 경고
+    if(SUPABASE_URL.includes('YOUR-PROJECT-REF') || SUPABASE_ANON_KEY.includes('YOUR-ANON-KEY')){
+      authError.textContent = 'Supabase 설정이 필요해요. HTML 상단의 SUPABASE_URL / SUPABASE_ANON_KEY를 채워주세요.';
+      authSubmit.disabled = true;
+      return;
+    }
+
+    const { data: { session } } = await sb.auth.getSession();
+    if(session){
+      await enterApp(session.user);
+    } else {
+      setAuthMode('signin');
+      setTimeout(() => authEmail.focus(), 100);
+    }
+
+    sb.auth.onAuthStateChange((event, session) => {
+      if(event === 'SIGNED_IN' && session){
+        enterApp(session.user);
+      } else if(event === 'SIGNED_OUT'){
+        exitApp();
+      }
+    });
+  })();
+
 </script>
 </body>
 </html>
