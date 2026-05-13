@@ -993,6 +993,7 @@
 
   /* ===== State ===== */
   const QUOTE_INDEX_KEY = 'timeledger.quoteIndex.v1';
+  const CURRENT_TASK_KEY = 'timeledger.currentTask.v1';
   let entries = [];
   let currentUser = null;
   let current = null;       // { name, startTs }
@@ -1149,6 +1150,26 @@
     }
   }
 
+  /* ===== Persist in-progress task ===== */
+  function saveCurrentTask(){
+    try{
+      if(current){
+        localStorage.setItem(CURRENT_TASK_KEY, JSON.stringify(current));
+      } else {
+        localStorage.removeItem(CURRENT_TASK_KEY);
+      }
+    } catch(e){}
+  }
+  function loadCurrentTask(){
+    try{
+      const raw = localStorage.getItem(CURRENT_TASK_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.name && parsed.startTs) return parsed;
+    } catch(e){}
+    return null;
+  }
+
   /* ===== Clock ===== */
   const clockEl = $('clockTime');
   const hhEl = clockEl.querySelector('.hh');
@@ -1280,13 +1301,19 @@
     const name = taskInput.value.trim();
     if(!name) return;
     current = { name, startTs: Date.now() };
-    $('runningTaskName').textContent = name;
-    $('startedAt').textContent = fmtTimeFull(current.startTs);
-    $('nowTime').textContent = fmtTimeFull(current.startTs);
-    $('elapsedTime').textContent = '00:00';
-    showRunning();
+    saveCurrentTask();
+    renderRunningUI();
     if(tickInterval) clearInterval(tickInterval);
     tickInterval = setInterval(tick, 1000);
+  }
+
+  function renderRunningUI(){
+    if(!current) return;
+    $('runningTaskName').textContent = current.name;
+    $('startedAt').textContent = fmtTimeFull(current.startTs);
+    $('nowTime').textContent = fmtTimeFull(Date.now());
+    $('elapsedTime').textContent = fmtElapsedShort(Date.now() - current.startTs);
+    showRunning();
   }
 
   function tick(){
@@ -1327,6 +1354,7 @@
     entries.unshift(entry);
     renderLedger();
     current = null;
+    saveCurrentTask();
     showIdle();
     await insertEntry(entry);
   }
@@ -1480,6 +1508,7 @@
   });
 
   async function enterApp(user){
+    const wasLoggedIn = !!currentUser;
     currentUser = user;
     $('userEmail').textContent = user.email || '익명';
     authOverlay.classList.remove('active');
@@ -1493,9 +1522,22 @@
       clockInterval = setInterval(updateClock, 1000);
       updateClock();
     }
-    renderQuote();
-    showIdle();
-    await fetchEntries();
+
+    // 최초 진입일 때만 quote/화면 초기화 — 토큰 갱신 시에는 그대로 둠
+    if(!wasLoggedIn){
+      renderQuote();
+      // 저장된 진행 중 작업이 있으면 복원
+      const saved = loadCurrentTask();
+      if(saved){
+        current = saved;
+        renderRunningUI();
+        if(tickInterval) clearInterval(tickInterval);
+        tickInterval = setInterval(tick, 1000);
+      } else if(!current){
+        showIdle();
+      }
+      await fetchEntries();
+    }
   }
 
   function exitApp(){
@@ -1503,6 +1545,7 @@
     entries = [];
     if(tickInterval){ clearInterval(tickInterval); tickInterval = null; }
     current = null;
+    saveCurrentTask();
     appLayout.style.display = 'none';
     authOverlay.classList.add('active');
     setAuthMode('signin');
@@ -1527,7 +1570,9 @@
     }
 
     sb.auth.onAuthStateChange((event, session) => {
+      // 같은 유저로 이미 로그인된 상태면 무시 (토큰 자동 갱신 등)
       if(event === 'SIGNED_IN' && session){
+        if(currentUser && currentUser.id === session.user.id) return;
         enterApp(session.user);
       } else if(event === 'SIGNED_OUT'){
         exitApp();
